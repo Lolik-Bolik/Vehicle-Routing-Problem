@@ -6,8 +6,8 @@ class Config:
     FILE_NAME = None
     NUM_ITERATIONS = 3000
 
-    ALPHA = 3
-    BETA = 5
-    RHO = 0.2
+    ALPHA = 0.3
+    BETA = 0.5
+    RHO = 0.05
 
-    USE_2_OPT_STRATEGY = True
+    USE_2_OPT_STRATEGY = False

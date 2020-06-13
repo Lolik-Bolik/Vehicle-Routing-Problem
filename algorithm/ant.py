@@ -8,23 +8,14 @@ class Ant:
         self.cfg = config
         self.reset_state()
 
-    def get_available_cities(self):
-        allowed_by_capacity = [city for city in self.cities_left if self.capacity >= self.graph.demand_map[city]]
-        return allowed_by_capacity
-
-    def select_first_city(self):
-        available_cities = self.get_available_cities()
-        return np.random.choice(available_cities)
-
     def select_next_city(self, current_city):
-        available_cities = self.get_available_cities()
+        available_cities = [city for city in self.cities_left if self.capacity >= self.graph.demand_map[city]]
 
         if not available_cities:
             return None
 
-
         scores = [pow(self.graph.pheromone_map[current_city][city], self.cfg.ALPHA) *
-                  pow(1 / (self.graph.adjacency_map[current_city][city] + 1e-6), self.cfg.BETA)
+                  pow(1 / (self.graph.adjacency_map[current_city][city] + 1e-10), self.cfg.BETA)
                   for city in available_cities]
         denominator = sum(scores)
         probabilities = [score / denominator for score in scores]
@@ -44,7 +35,7 @@ class Ant:
         self.capacity = self.ant_capacity
         self.routes.append([1])
 
-        first_city = self.select_first_city()
+        first_city = np.random.choice([city for city in self.cities_left if self.capacity >= self.graph.demand_map[city]])
         self.move_to_city(1, first_city)
 
     def find_solution(self):
