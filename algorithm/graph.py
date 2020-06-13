@@ -32,6 +32,23 @@ class Graph:
                 pheromone_map[node_2][node_1] = 1
         return pheromone_map
 
+    def update_pheromone_map(self, solutions: list):
+        nodes = list(sorted(self.pheromone_map.keys()))
+        for index_1, node_1 in enumerate(nodes):
+            for node_2 in nodes[index_1 + 1:]:
+                new_value = max(round((1 - self.cfg.RHO) * self.pheromone_map[node_1][node_2], 2),
+                                1e-10)
+                self.pheromone_map[node_1][node_2] = new_value
+                self.pheromone_map[node_2][node_1] = new_value
+
+        for solution in solutions:
+            pheromone_increase = 1 / solution[1]
+            for route in solution[0]:
+                edges = [(route[index], route[index + 1]) for index in range(0, len(route) - 1)]
+                for edge in edges:
+                    self.pheromone_map[edge[0]][edge[1]] += pheromone_increase
+                    self.pheromone_map[edge[1]][edge[0]] += pheromone_increase
+
     def global_update_pheromone_map(self, ant_solution, capacity):
         nodes = list(sorted(self.pheromone_map.keys()))
         for i, node_1 in enumerate(nodes):
@@ -46,22 +63,4 @@ class Graph:
             for edge in edges:
                 self.pheromone_map[edge[0]][edge[1]] += pheromone_increase
                 self.pheromone_map[edge[1]][edge[0]] += pheromone_increase
-
-    def update_pheromone_map(self, ant_solution):
-        nodes = list(sorted(self.pheromone_map.keys()))
-        for i, node_1 in enumerate(nodes):
-            for node_2 in nodes[i + 1:]:
-                new_value = max((1 - self.cfg.RHO) * self.pheromone_map[node_1][node_2], 1e-10)
-                self.pheromone_map[node_1][node_2] = new_value
-                self.pheromone_map[node_2][node_1] = new_value
-
-        for route in ant_solution[0]:
-            edges = [(route[index], route[index + 1]) for index in range(0, len(route) - 1)]
-            for edge in edges:
-                pheromone_increase = 1 / (float(self.adjacency_map[edge[0]][edge[1]]) + 1e-6)
-                self.pheromone_map[edge[0]][edge[1]] += pheromone_increase
-                self.pheromone_map[edge[1]][edge[0]] += pheromone_increase
-
-
-
 

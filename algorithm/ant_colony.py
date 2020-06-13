@@ -67,15 +67,12 @@ class Solver:
         for i in range(1, cfg.NUM_ITERATIONS + 1):
             for ant in ants:
                 ant.reset_state()
-            solutions = []
-            for ant in ants:
-                ant_solution = ant.find_solution()
-                graph.update_pheromone_map(ant_solution)
-                solutions.append(ant_solution)
+            solutions = [ant.find_solution() for ant in ants]
 
             candidate_best_solution = min(solutions, key=lambda solution: solution[1])
             if cfg.USE_2_OPT_STRATEGY:
                 candidate_best_solution = self.apply_two_opt(candidate_best_solution, graph)
+            graph.update_pheromone_map(solutions)
             graph.global_update_pheromone_map(candidate_best_solution, capacity)
             if not best_solution or candidate_best_solution[1] < best_solution[1]:
 
